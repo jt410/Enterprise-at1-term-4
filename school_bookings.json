@@ -1,0 +1,38 @@
+{
+  "bookings": [
+    {
+      "booking_id": 1,
+      "room_id": "Science Lab",
+      "user_id": "a",
+      "start": "2026-11-11T12:15:00",
+      "end": "2026-11-11T13:15:00",
+      "active": false
+    },
+    {
+      "booking_id": 2,
+      "room_id": "Science Lab",
+      "user_id": "a",
+      "start": "2026-11-12T11:15:00",
+      "end": "2026-11-12T12:15:00",
+      "active": false
+    },
+    {
+      "booking_id": 3,
+      "room_id": "Library",
+      "user_id": "l",
+      "start": "2026-11-11T12:30:00",
+      "end": "2026-11-11T13:30:00",
+      "active": false
+    }
+  ],
+  "bans": {
+    "l": "2026-11-11T11:25:00"
+  },
+  "users": {
+    "james taylor": {
+      "name": "James Taylor",
+      "salt": "666c028481a4460725cb4885e4ebdf34",
+      "password_hash": "12ed0642cd16c960def9e9183b90ec70e7a8f946727753d7a20ab858099b54cb"
+    }
+  }
+}

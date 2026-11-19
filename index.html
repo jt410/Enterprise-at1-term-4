@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f3ed">
+  <title>QHHS Booking | School rooms</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f2f3ed;
+      --white: #fffefa;
+      --ink: #1d2924;
+      --muted: #64716b;
+      --line: #dce1d8;
+      --green: #245c43;
+      --green-dark: #193e2f;
+      --mint: #e2eee5;
+      --orange: #e38a4b;
+      --red: #a63e35;
+      --shadow: 0 18px 48px rgb(29 41 36 / 8%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 87% 2%, rgb(226 238 229 / 85%), transparent 29rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1180px; margin: auto; padding: 0 34px 56px; }
+    header {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 800; letter-spacing: .04em; }
+    .brand-mark {
+      width: 34px; height: 34px; display: grid; place-items: center;
+      color: white; background: var(--green); border-radius: 10px 10px 10px 3px;
+      font-family: Georgia, serif; font-size: 19px;
+    }
+    .header-meta { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 13px; }
+    .header-meta button { color: var(--green); border: 0; background: none; font-weight: 700; }
+    .header-meta [hidden] { display: none; }
+    .auth-screen { max-width: 470px; margin: 56px auto 70px; padding: 32px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+    .auth-screen[hidden], #booking-app[hidden], #app-footer[hidden] { display: none; }
+    .auth-screen h2 { font-size: 30px; margin-top: 6px; }
+    .auth-screen > p { color: var(--muted); font-size: 13px; margin: 8px 0 22px; }
+    .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 4px; margin-bottom: 22px; background: #edf0e9; border-radius: 7px; }
+    .auth-tab { min-height: 38px; color: var(--muted); background: transparent; border: 0; border-radius: 5px; font-size: 13px; font-weight: 750; }
+    .auth-tab.active { color: var(--green-dark); background: var(--white); box-shadow: 0 1px 3px rgb(29 41 36 / 10%); }
+    .auth-notice { min-height: 24px; color: var(--red); font-size: 13px; margin: 12px 0 0; }
+    .intro { padding: 44px 0 32px; display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+    .eyebrow { color: var(--green); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 800; }
+    h1 { font: 500 42px/1.1 Georgia, "Times New Roman", serif; letter-spacing: 0; margin: 9px 0 8px; }
+    .intro p { color: var(--muted); margin: 0; max-width: 540px; }
+    .today { color: var(--muted); font-size: 13px; white-space: nowrap; padding-bottom: 5px; }
+    .workspace { display: grid; grid-template-columns: minmax(300px, .82fr) minmax(450px, 1.18fr); gap: 28px; align-items: start; }
+    .surface { background: var(--white); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+    .form-surface { padding: 26px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: start; gap: 14px; margin-bottom: 21px; }
+    h2 { font: 500 25px/1.18 Georgia, "Times New Roman", serif; letter-spacing: 0; margin: 0; }
+    .section-heading p { color: var(--muted); font-size: 13px; margin: 5px 0 0; }
+    .step { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+    label { display: block; color: #3d4a43; font-size: 12px; font-weight: 750; margin: 0 0 7px; }
+    input, select {
+      width: 100%; min-height: 44px; padding: 10px 12px; color: var(--ink);
+      background: #fff; border: 1px solid #cfd7ce; border-radius: 6px; outline: none;
+    }
+    input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(36 92 67 / 12%); }
+    .field { margin-bottom: 16px; }
+    .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .primary {
+      width: 100%; min-height: 46px; color: white; background: var(--green);
+      border: 1px solid var(--green); border-radius: 6px; font-weight: 750;
+      transition: background .15s, transform .15s;
+    }
+    .primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .notice { min-height: 24px; margin: 12px 0 0; color: var(--green); font-size: 13px; }
+    .notice.error { color: var(--red); }
+    .schedule { overflow: hidden; }
+    .schedule-top { display: flex; align-items: center; justify-content: space-between; padding: 24px 25px 17px; }
+    .schedule-top h2 { font-size: 25px; }
+    .schedule-tools { display: flex; align-items: center; gap: 11px; }
+    .count { color: var(--muted); font-size: 12px; }
+    .icon-button {
+      width: 36px; height: 36px; display: grid; place-items: center; color: var(--green);
+      background: var(--white); border: 1px solid var(--line); border-radius: 6px;
+    }
+    .icon-button:hover { background: var(--mint); }
+    .booking-list { border-top: 1px solid var(--line); }
+    .booking-row {
+      display: grid; grid-template-columns: 106px minmax(0, 1fr) auto; gap: 16px;
+      align-items: center; padding: 16px 25px; border-bottom: 1px solid #e8ebe5;
+      animation: enter .28s ease both;
+    }
+    .booking-row:last-child { border-bottom: 0; }
+    .date-block { border-right: 1px solid var(--line); padding-right: 12px; }
+    .date-day { font: 500 21px/1.15 Georgia, "Times New Roman", serif; }
+    .date-month { color: var(--muted); text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .09em; }
+    .booking-title { font-weight: 800; }
+    .booking-detail { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .room-tag { display: inline-flex; gap: 6px; align-items: center; margin-top: 7px; color: var(--green); font-size: 11px; font-weight: 800; }
+    .room-dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; }
+    .cancel {
+      width: 34px; height: 34px; color: var(--muted); background: transparent;
+      border: 1px solid transparent; border-radius: 6px; font-size: 18px;
+    }
+    .cancel:hover { color: var(--red); background: #fcf0ee; border-color: #f1d8d4; }
+    .empty { padding: 44px 24px; text-align: center; color: var(--muted); }
+    .empty-mark { width: 42px; height: 42px; display: grid; place-items: center; margin: 0 auto 12px; color: var(--green); background: var(--mint); border-radius: 50%; font-size: 20px; }
+    .teacher { margin-top: 25px; border-top: 1px solid var(--line); }
+    .teacher-toggle {
+      display: flex; justify-content: space-between; align-items: center; width: 100%;
+      padding: 17px 0; color: var(--ink); background: transparent; border: 0; text-align: left;
+    }
+    .teacher-toggle span:first-child { font-weight: 800; }
+    .teacher-toggle small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
+    .teacher-content { display: none; padding: 0 0 3px; }
+    .teacher-content.open { display: block; animation: enter .2s ease both; }
+    .teacher-content > .field:first-child { margin-top: 2px; }
+    .teacher-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+    .secondary { min-height: 42px; padding: 8px 11px; color: var(--green); background: var(--mint); border: 1px solid #cddfd0; border-radius: 6px; font-weight: 750; font-size: 12px; }
+    .secondary:hover { background: #d6e8da; }
+    .teacher-rule { height: 1px; border: 0; background: var(--line); margin: 20px 0; }
+    .footer { margin-top: 28px; color: var(--muted); font-size: 11px; text-align: center; }
+    @keyframes enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 800px) {
+      .shell { padding: 0 20px 40px; }
+      .workspace { grid-template-columns: 1fr; }
+      .intro { padding-top: 34px; }
+    }
+    @media (max-width: 520px) {
+      .shell { padding: 0 14px 28px; }
+      header { min-height: 65px; }
+      .header-meta { gap: 8px; }
+      .header-meta span { display: none; }
+      .intro { display: block; padding: 30px 0 23px; }
+      h1 { font-size: 35px; }
+      .today { margin-top: 13px; }
+      .form-surface { padding: 20px 17px; }
+      .schedule-top { padding: 20px 17px 14px; }
+      .booking-row { grid-template-columns: 75px minmax(0, 1fr) auto; gap: 10px; padding: 14px 14px; }
+      .date-block { padding-right: 8px; }
+      .date-day { font-size: 18px; }
+      .booking-title { font-size: 13px; }
+      .time-grid { gap: 9px; }
+      input, select { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><div class="brand-mark" aria-hidden="true">Q</div> QHHS BOOKING</div>
+      <div class="header-meta"><span id="signed-in-as" hidden></span><button type="button" id="teacher-jump" hidden>Teacher tools</button><button type="button" id="signout" hidden>Sign out</button></div>
+    </header>
+    <main>
+      <section class="auth-screen" id="auth-screen" aria-labelledby="auth-title">
+        <div class="eyebrow">QHHS student access</div>
+        <h2 id="auth-title">Welcome back.</h2>
+        <p id="auth-description">Sign in with your name and password to manage your room bookings.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Account access">
+          <button class="auth-tab active" id="signin-tab" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button class="auth-tab" id="register-tab" type="button" role="tab" aria-selected="false">Create account</button>
+        </div>
+        <form id="auth-form">
+          <div class="field"><label for="auth-name">Name</label><input id="auth-name" autocomplete="name" required maxlength="80" placeholder="Your full name"></div>
+          <div class="field"><label for="auth-password">Password</label><input id="auth-password" type="password" autocomplete="current-password" required minlength="8" placeholder="At least 8 characters"></div>
+          <button class="primary" id="auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+          <p class="auth-notice" id="auth-notice" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <div id="booking-app" hidden>
+      <section class="intro">
+        <div>
+          <div class="eyebrow">A shared school calendar</div>
+          <h1>Room to learn.</h1>
+          <p>Find a space, choose a time, and make it yours. Every booking stays visible to the school.</p>
+        </div>
+        <div class="today" id="today"></div>
+      </section>
+      <div class="workspace">
+        <section class="surface form-surface" aria-labelledby="booking-heading">
+          <div class="section-heading">
+            <div><h2 id="booking-heading">Make a booking</h2><p>Room holds are checked as you book.</p></div>
+            <span class="step">01 / 02</span>
+          </div>
+          <form id="booking-form">
+            <div class="field"><label>Booking as</label><div id="booking-name" style="padding:10px 0;font-weight:800"></div></div>
+            <div class="field"><label for="room">School room</label><select id="room" name="room" required></select></div>
+            <div class="time-grid">
+              <div class="field"><label for="start">Starts</label><input id="start" name="start" type="datetime-local" required></div>
+              <div class="field"><label for="end">Ends</label><input id="end" name="end" type="datetime-local" required></div>
+            </div>
+            <button class="primary" type="submit">Reserve room <span aria-hidden="true">→</span></button>
+            <p class="notice" id="booking-notice" role="status" aria-live="polite"></p>
+          </form>
+          <section class="teacher" id="teacher-section">
+            <button class="teacher-toggle" type="button" id="teacher-toggle" aria-expanded="false">
+              <span>Teacher controls<small>Overrides, cancellations and temporary bans</small></span><span aria-hidden="true">＋</span>
+            </button>
+            <div class="teacher-content" id="teacher-content">
+              <div class="field"><label for="teacher-pin">Teacher PIN</label><input id="teacher-pin" type="password" autocomplete="current-password" placeholder="Enter teacher PIN"></div>
+              <div class="field"><label for="ban-name">Ban a person</label><input id="ban-name" maxlength="80" placeholder="Name"></div>
+              <div class="field"><label for="ban-until">Ban until</label><input id="ban-until" type="datetime-local"></div>
+              <div class="teacher-actions">
+                <button class="secondary" id="ban-button" type="button">Apply temporary ban</button>
+                <button class="secondary" id="unban-button" type="button">Remove ban</button>
+              </div>
+              <hr class="teacher-rule">
+              <p style="color:var(--muted);font-size:12px;margin:0">To replace a room reservation, enter the teacher PIN above, then make the booking. Conflicting bookings for that room will be cancelled.</p>
+              <p class="notice" id="teacher-notice" role="status" aria-live="polite"></p>
+            </div>
+          </section>
+        </section>
+        <section class="surface schedule" aria-labelledby="schedule-heading">
+          <div class="schedule-top">
+            <div><h2 id="schedule-heading">Room schedule</h2><div class="count" id="booking-count">Loading bookings</div></div>
+            <div class="schedule-tools"><button class="icon-button" id="refresh" type="button" aria-label="Refresh schedule" title="Refresh schedule"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></svg></button></div>
+          </div>
+          <div class="booking-list" id="booking-list" aria-live="polite"></div>
+        </section>
+      </div>
+      </div>
+    </main>
+    <div class="footer" id="app-footer" hidden>Bookings use local school time. Back-to-back bookings by the same person are not allowed.</div>
+  </div>
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const list = $("#booking-list");
+    const notice = $("#booking-notice");
+    const teacherNotice = $("#teacher-notice");
+    const pinInput = $("#teacher-pin");
+    let currentUser = null;
+    let authMode = "login";
+
+    function setNotice(element, text, isError = false) {
+      element.textContent = text;
+      element.classList.toggle("error", isError);
+    }
+
+    async function request(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "The request could not be completed.");
+      return data;
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const registering = mode === "register";
+      $("#auth-title").textContent = registering ? "Create your account." : "Welcome back.";
+      $("#auth-description").textContent = registering
+        ? "Create an account with your name and password. Use the same details to sign in next time."
+        : "Sign in with your name and password to manage your room bookings.";
+      $("#auth-submit").innerHTML = `${registering ? "Create account" : "Sign in"} <span aria-hidden="true">→</span>`;
+      $("#signin-tab").classList.toggle("active", !registering);
+      $("#register-tab").classList.toggle("active", registering);
+      $("#signin-tab").setAttribute("aria-selected", String(!registering));
+      $("#register-tab").setAttribute("aria-selected", String(registering));
+      $("#auth-notice").textContent = "";
+    }
+
+    function showAccount(user) {
+      currentUser = user;
+      $("#auth-screen").hidden = true;
+      $("#booking-app").hidden = false;
+      $("#app-footer").hidden = false;
+      $("#signed-in-as").textContent = user.name;
+      $("#signed-in-as").hidden = false;
+      $("#teacher-jump").hidden = false;
+      $("#signout").hidden = false;
+      $("#booking-name").textContent = user.name;
+      loadRooms();
+      loadBookings();
+    }
+
+    function localValue(date) {
+      const pad = (number) => String(number).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function renderBookings(bookings) {
+      $("#booking-count").textContent = `${bookings.length} active booking${bookings.length === 1 ? "" : "s"}`;
+      if (!bookings.length) {
+        list.innerHTML = '<div class="empty"><div class="empty-mark" aria-hidden="true">＋</div><strong>Nothing on the schedule yet</strong><div>New room bookings will appear here.</div></div>';
+        return;
+      }
+      list.innerHTML = bookings.map((booking, index) => {
+        const start = new Date(booking.start);
+        const end = new Date(booking.end);
+        const date = new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric" }).format(start).split(" ");
+        const month = new Intl.DateTimeFormat(undefined, { month: "short", year: "numeric" }).format(start);
+        const time = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
+        return `<article class="booking-row" style="animation-delay:${Math.min(index, 8) * 25}ms">
+          <div class="date-block"><div class="date-day">${date[1] || ""}</div><div class="date-month">${month}</div></div>
+          <div><div class="booking-title">${escapeHtml(booking.name)}</div><div class="booking-detail">${time.format(start)} – ${time.format(end)}</div><div class="room-tag"><span class="room-dot"></span>${escapeHtml(booking.room)}</div></div>
+          <button class="cancel" type="button" aria-label="Cancel booking ${booking.id}" title="Cancel booking" data-id="${booking.id}">×</button>
+        </article>`;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    async function loadBookings() {
+      list.setAttribute("aria-busy", "true");
+      try {
+        const data = await request("/api/bookings");
+        renderBookings(data.bookings);
+      } catch (error) {
+        list.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+      } finally {
+        list.removeAttribute("aria-busy");
+      }
+    }
+
+    async function loadRooms() {
+      const data = await request("/api/rooms");
+      $("#room").innerHTML = data.rooms.map((room) => `<option value="${escapeHtml(room)}">${escapeHtml(room)}</option>`).join("");
+    }
+
+    $("#booking-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setNotice(notice, "Checking availability…");
+      const payload = {
+        room: $("#room").value,
+        start: $("#start").value,
+        end: $("#end").value,
+        teacher_pin: pinInput.value,
+        override: Boolean(pinInput.value)
+      };
+      try {
+        const result = await request("/api/bookings", { method: "POST", body: JSON.stringify(payload) });
+        const replaced = result.replaced.length ? ` Replaced ${result.replaced.length} existing booking(s).` : "";
+        setNotice(notice, `Room reserved. Booking #${result.booking.id}.${replaced}`);
+        event.target.reset();
+        await loadBookings();
+      } catch (error) {
+        setNotice(notice, error.message, true);
+      }
+    });
+
+    list.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-id]");
+      if (!button) return;
+      if (!confirm("Cancel this booking?")) return;
+      try {
+        await request("/api/bookings/cancel", {
+          method: "POST",
+          body: JSON.stringify({ id: Number(button.dataset.id), teacher_pin: pinInput.value })
+        });
+        setNotice(notice, "Booking cancelled.");
+        await loadBookings();
+      } catch (error) {
+        setNotice(notice, error.message, true);
+      }
+    });
+
+    $("#teacher-toggle").addEventListener("click", () => {
+      const content = $("#teacher-content");
+      const open = content.classList.toggle("open");
+      $("#teacher-toggle").setAttribute("aria-expanded", String(open));
+      $("#teacher-toggle span:last-child").textContent = open ? "−" : "＋";
+    });
+    $("#teacher-jump").addEventListener("click", () => {
+      $("#teacher-content").classList.add("open");
+      $("#teacher-toggle").setAttribute("aria-expanded", "true");
+      $("#teacher-section").scrollIntoView({ behavior: "smooth", block: "center" });
+      pinInput.focus();
+    });
+    $("#ban-button").addEventListener("click", async () => {
+      try {
+        await request("/api/teacher/ban", { method: "POST", body: JSON.stringify({ teacher_pin: pinInput.value, name: $("#ban-name").value.trim(), until: $("#ban-until").value }) });
+        setNotice(teacherNotice, "Temporary ban applied.");
+      } catch (error) { setNotice(teacherNotice, error.message, true); }
+    });
+    $("#unban-button").addEventListener("click", async () => {
+      try {
+        await request("/api/teacher/unban", { method: "POST", body: JSON.stringify({ teacher_pin: pinInput.value, name: $("#ban-name").value.trim() }) });
+        setNotice(teacherNotice, "Ban removed.");
+      } catch (error) { setNotice(teacherNotice, error.message, true); }
+    });
+    $("#refresh").addEventListener("click", loadBookings);
+    $("#signin-tab").addEventListener("click", () => setAuthMode("login"));
+    $("#register-tab").addEventListener("click", () => setAuthMode("register"));
+    $("#auth-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {
+        name: $("#auth-name").value.trim(),
+        password: $("#auth-password").value,
+      };
+      try {
+        const endpoint = authMode === "register" ? "/api/register" : "/api/login";
+        const data = await request(endpoint, { method: "POST", body: JSON.stringify(payload) });
+        event.target.reset();
+        showAccount(data.user);
+      } catch (error) {
+        $("#auth-notice").textContent = error.message;
+      }
+    });
+    $("#signout").addEventListener("click", async () => {
+      await request("/api/logout", { method: "POST", body: "{}" });
+      currentUser = null;
+      $("#booking-app").hidden = true;
+      $("#app-footer").hidden = true;
+      $("#auth-screen").hidden = false;
+      $("#signed-in-as").hidden = true;
+      $("#teacher-jump").hidden = true;
+      $("#signout").hidden = true;
+      pinInput.value = "";
+      setAuthMode("login");
+    });
+
+    const now = new Date();
+    $("#today").textContent = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(now);
+    const earliest = new Date(now.getTime() + 60 * 60 * 1000);
+    earliest.setMinutes(Math.ceil(earliest.getMinutes() / 15) * 15, 0, 0);
+    $("#start").min = localValue(earliest);
+    $("#start").value = localValue(earliest);
+    const defaultEnd = new Date(earliest.getTime() + 60 * 60 * 1000);
+    $("#end").min = localValue(defaultEnd);
+    $("#end").value = localValue(defaultEnd);
+    $("#start").addEventListener("change", () => {
+      const start = new Date($("#start").value);
+      if (!Number.isNaN(start.getTime())) {
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+        $("#end").min = localValue(end);
+        if (!$("#end").value || new Date($("#end").value) <= start) $("#end").value = localValue(end);
+      }
+    });
+    request("/api/me").then((data) => {
+      if (data.user) showAccount(data.user);
+    }).catch(() => {
+      $("#auth-screen").hidden = false;
+    });
+  </script>
+</body>
+</html>
